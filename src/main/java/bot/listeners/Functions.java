@@ -15,8 +15,7 @@ import java.util.List;
 
 
 public class Functions {
-    private final Object lock = new Object();
-    private final Set<String> sentReminders = new HashSet<>();
+
     public EmbedBuilder getReminderEmbedForMessage(int reminderId) {
         // Connect to the database and retrieve the reminder by its ID
         DatabaseConnection dbConnection = new DatabaseConnection();
@@ -32,13 +31,27 @@ public class Functions {
                 String creator = rs.getString("creador");
                 Timestamp timestamp = rs.getTimestamp("fecha");
 
+                // Adjusting description format
+                StringBuilder formattedDescription = new StringBuilder(description);
+
+                // Add URL to the description if it's not null
+                if (url != null && !url.trim().isEmpty()) {
+                    formattedDescription.append("\n\n")
+                            .append("**URL:** ")
+                            .append(url);
+                }
+
                 // Create an EmbedBuilder and populate it with the data
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setTitle(title)
-                        .setDescription(description + " \n \n" + "URL:" + url)
-                        .setUrl(url)
+                        .setDescription(formattedDescription.toString())
                         .setColor(Color.BLUE)
                         .setFooter("Reminder created by: " + creator + ". Date: " + timestamp);
+
+                // Set URL only if it's not null
+                if (url != null && !url.trim().isEmpty()) {
+                    embedBuilder.setUrl(url);
+                }
 
                 return embedBuilder;
             }
@@ -48,6 +61,7 @@ public class Functions {
         }
         return null;
     }
+
     public boolean hasSent24hReminderDm(int reminderId) {
         String query = "SELECT sent_24h_reminder_dm FROM REMINDERS WHERE reminder_id = ?";
         DatabaseConnection dbConnection = new DatabaseConnection();
