@@ -1,0 +1,207 @@
+create database if not exists remindme;
+use remindme;
+-- DROP DATABASE IF EXISTS remindme;
+
+CREATE TABLE USERS (
+    user_id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,  
+    discord_id BIGINT NOT NULL,
+    discord_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    UNIQUE(discord_id)
+);
+
+CREATE TABLE REMINDERS(
+    reminder_id int PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT, 
+    titulo VARCHAR(200),
+    descripcion VARCHAR(650),
+    url VARCHAR(255),
+    creador VARCHAR(255),
+    fecha DATETIME,
+    sent_24h_reminder BOOLEAN DEFAULT FALSE,
+    sent_1h_reminder BOOLEAN DEFAULT FALSE,
+    message_id BIGINT,
+    FOREIGN KEY(user_id) REFERENCES USERS(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE MEETING_ATTENDEES (
+    user_id BIGINT NOT NULL,  
+    reminder_id int NOT NULL,
+    PRIMARY KEY(user_id, reminder_id),
+    FOREIGN KEY(user_id) REFERENCES USERS(user_id) ON DELETE CASCADE,
+    FOREIGN KEY(reminder_id) REFERENCES REMINDERS(reminder_id) ON DELETE CASCADE
+);
+
+SELECT * FROM USERS WHERE discord_id = '1022108511523573830';
+
+select *
+from reminders;
+
+select *
+from users;
+
+select *
+from MEETING_ATTENDEES;
+
+-- Reminder 1
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Diseño de interfaces web. Videotutoría.', 'Descripción: 2137_50: DAW.MP9. Diseño de interfaces web', 'https://ilernaonline.zoom.us/j/96577332457', 'yasufake', '2023-10-19 17:00');
+
+-- Reminder 2
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Desarrollo web entorno servidor. Videotutoría.', 'Descripción: 2135_50: DAW.MP7. Desarrollo web entorno servidor', 'https://ilernaonline.zoom.us/j/568479112', 'yasufake', '2023-10-23 17:50');
+
+-- Reminder 3
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Despliegue de aplicaciones web. Videotutoria.', 'Descripción: 2136_50: MP8. Despliegue de aplicaciones web', 'https://ilernaonline.zoom.us/j/96836992057?pwd=UFk4N2UwdG13cVZOdHNCVjhDSGd6QT09', 'yasufake', '2023-10-25 14:55');
+
+-- Reminder 4
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Desarrollo web entorno cliente. Videotutoría', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', 'https://ilernaonline.zoom.us/j/96367614556', 'yasufake', '2023-10-25 16:55');
+
+-- Reminder 5
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Diseño de interfaces web. Videotutoría.', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', 'https://ilernaonline.zoom.us/j/96577332457', 'yasufake', '2023-10-26 17:00');
+
+-- Reminder 6
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 1 (UF1): Introducción al diseño web. (MP9)', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', NULL, 'yasufake', '2023-10-26 23:00');
+
+-- Reminder 7
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 2 (UF1): Diseño de una web. (MP9)', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', NULL, 'yasufake', '2023-10-26 23:00');
+
+-- Reminder 8
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 3 (UF1): Introducción a CSS. (MP9)', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', NULL, 'yasufake', '2023-10-26 23:00');
+
+-- Reminder 9
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 4 (UF1): Elementos de ordenación. (MP9)', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', NULL, 'yasufake', '2023-10-26 23:00');
+
+-- Reminder 10
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 5 (UF1): Estilos en línea (MP9)', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', NULL, 'yasufake', '2023-10-26 23:00');
+
+-- Reminder 11
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 6 (UF1): Atributos de CSS(MP9)', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', NULL, 'yasufake', '2023-10-26 23:00');
+
+-- Reminder 12
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC (UF1) Test Evaluable', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', NULL, 'yasufake', '2023-10-26 23:00');
+
+-- Reminder 13
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 1 (UF1): Arquitectura Web', 'Descripción 2136_50:MP8. Despliegue de aplicaciones web', NULL, 'yasufake', '2023-10-28 23:00');
+
+-- Reminder 14
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 2 (UF1): Servidor Aplicaciones', 'Descripción 2136_50:MP8. Despliegue de aplicaciones web', NULL, 'yasufake', '2023-10-28 23:00');
+
+-- Reminder 15
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 3 (UF1): Administración de servicores web', 'Descripción 2136_50:MP8. Despliegue de aplicaciones web', NULL, 'yasufake', '2023-10-28 23:00');
+
+-- Reminder 16
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 4 (UF1): Modelo cliente-servidor', 'Descripción 2136_50:MP8. Despliegue de aplicaciones web', NULL, 'yasufake', '2023-10-28 23:00');
+
+-- Reminder 17
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC 5 (UF1): Test Evaluable', 'Descripción 2136_50:MP8. Despliegue de aplicaciones web', NULL, 'yasufake', '2023-10-28 23:00');
+
+-- Reminder 18
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Desarrollo web entorno servidor. Videotutoría.', 'Descripción: 2135_50: DAW.MP7. Desarrollo web entorno servidor', 'https://ilernaonline.zoom.us/j/568479112', 'yasufake', '2023-10-30 17:50');
+
+-- Reminder 19
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Desarrollo web entorno cliente. Videotutoría', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', 'https://ilernaonline.zoom.us/j/96367614556', 'yasufake', '2023-11-01 16:55');
+
+-- Reminder 20
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Diseño de interfaces web. Videotutoría.', 'Descripción: 2137_50: DAW.MP9. Diseño de interfaces web', 'https://ilernaonline.zoom.us/j/96577332457', 'yasufake', '2023-11-02 17:00');
+
+-- Reminder 21
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC1 (UF2): Funciones y arrays', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', NULL, 'yasufake', '2023-11-03 23:00');
+
+-- Reminder 22
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC2 (UF2): Características de la programación orientada a objetos', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', NULL, 'yasufake', '2023-11-03 23:00');
+
+-- Reminder 23
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC3 (UF2): Funciones y arrays', 'Descripción 2134_50:DAW.MP6. Objetos definidos por el usuario', NULL, 'yasufake', '2023-11-03 23:00');
+
+-- Reminder 24
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Test evaluable (UF2)', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', NULL, 'yasufake', '2023-11-03 23:00');
+
+-- Reminder 25
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Desarrollo web entorno servidor. Videotutoría.', 'Descripción: 2135_50: DAW.MP7. Desarrollo web entorno servidor', 'https://ilernaonline.zoom.us/j/568479112', 'yasufake', '2023-11-06 17:50');
+
+-- Reminder 26
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC1(UF2): Formularios Web', 'Descripción: 2135_50: DAW.MP7. Desarrollo web entorno servidor', NULL, 'yasufake', '2023-11-05 23:00');
+
+-- Reminder 27
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC2(UF2): MVC', 'Descripción: 2135_50: DAW.MP7. Desarrollo web entorno servidor', NULL, 'yasufake', '2023-11-05 23:00');
+
+-- Reminder 28
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Test Evaluable (UF2)', 'Descripción: 2135_50: DAW.MP7. Desarrollo web entorno servidor', NULL, 'yasufake', '2023-11-05 23:00');
+
+-- Reminder 29
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Despliegue de aplicaciones web. Videotutoria.', 'Descripción: 2136_50: MP8. Despliegue de aplicaciones web', 'https://ilernaonline.zoom.us/j/96836992057?pwd=UFk4N2UwdG13cVZOdHNCVjhDSGd6QT09', 'yasufake', '2023-11-08 14:55');
+
+-- Reminder 30
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Desarrollo web entorno cliente. Videotutoría', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', 'https://ilernaonline.zoom.us/j/96367614556', 'yasufake', '2023-11-08 16:55');
+
+-- Reminder 31
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Diseño de interfaces web. Videotutoría.', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', 'https://ilernaonline.zoom.us/j/96577332457', 'yasufake', '2023-11-09 17:00');
+
+-- Reminder 32
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Actividad de desarrollo (UF3)', 'Descripción 2134_50: DAW.MP6. Desarrollo web entorno cliente', NULL, 'yasufake', '2023-11-23 23:00');
+
+-- Reminder 33
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Desarrollo web entorno servidor. Videotutoría.', 'Descripción: 2135_50: DAW.MP7. Desarrollo web entorno servidor', 'https://ilernaonline.zoom.us/j/568479112', 'yasufake', '2023-11-27 17:50');
+
+-- Reminder 34
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC1 (UF3): Eventos', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', NULL, 'yasufake', '2023-11-28 23:00');
+
+-- Reminder 35
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC2 (UF3): Formularios web', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', NULL, 'yasufake', '2023-11-28 23:00');
+
+-- Reminder 36
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC3 (UF3): Modelos de Objetos en un documento web', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', NULL, 'yasufake', '2023-11-28 23:00');
+
+-- Reminder 37
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'PAC4 (UF3): Eventos en javascript', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', NULL, 'yasufake', '2023-11-28 23:00');
+
+-- Reminder 38
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Despliegue de aplicaciones web. Videotutoria.', 'Descripción: 2136_50: MP8. Despliegue de aplicaciones web', 'https://ilernaonline.zoom.us/j/96836992057?pwd=UFk4N2UwdG13cVZOdHNCVjhDSGd6QT09', 'yasufake', '2023-11-29 14:55');
+
+-- Reminder 39
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Desarrollo web entorno cliente. Videotutoría', 'Descripción 2134_50:DAW.MP6. Desarrollo web entorno cliente', 'https://ilernaonline.zoom.us/j/96367614556', 'yasufake', '2023-11-29 16:55');
+
+-- Reminder 40
+INSERT INTO REMINDERS (user_id, titulo, descripcion, url, creador, fecha)
+VALUES (1, 'Diseño de interfaces web. Videotutoría.', 'Descripción 2137_50: DAW.MP9. Diseño de interfaces web', 'https://ilernaonline.zoom.us/j/96577332457', 'yasufake', '2023-11-30 17:00');
+-- Insert values for reminders 1 to 40 with user_id = 1
+INSERT INTO MEETING_ATTENDEES (user_id, reminder_id)
+SELECT 1, reminder_id FROM REMINDERS WHERE reminder_id BETWEEN 1 AND 40;
