@@ -25,7 +25,7 @@ public class Main {
         DatabaseFunctions dbFunctions = new DatabaseFunctions();
         List<Reminder> reminders = dbFunctions.getUpcomingReminders();
         // Print the results
-        for (Reminder reminder : reminders) {
+        /*for (Reminder reminder : reminders) {
             System.out.println("Reminder ID: " + reminder.getReminderId());
             System.out.println("User ID: " + reminder.getUserId());
             System.out.println("Title: " + reminder.getTitle());
@@ -36,7 +36,8 @@ public class Main {
             System.out.println("Message ID: " + reminder.getMessageId());
             System.out.println("-------------------------------");
         }
-        dbFunctions.testConnection();
+
+         */
         try {
             // Creating the bot (default config)x
             bot = JDABuilder.createDefault(Config.getDiscordApiToken())
@@ -44,6 +45,7 @@ public class Main {
                     .setStatus(OnlineStatus.ONLINE)
                     .enableCache(CacheFlag.VOICE_STATE)
                     .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.MESSAGE_CONTENT)
+                    .addEventListeners(new CommandsHandler())
                     .build().awaitReady();
 
             // Create an instance of the Bot class
@@ -51,7 +53,6 @@ public class Main {
             botInstance.setJDA(bot);  // Set the JDA instance
 
             // Add event listeners
-            bot.addEventListener(new CommandsHandler());
             bot.addEventListener(botInstance);
 
 

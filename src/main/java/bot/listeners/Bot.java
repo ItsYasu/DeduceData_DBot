@@ -29,6 +29,8 @@ import java.awt.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +56,7 @@ public class Bot extends ListenerAdapter {
         initScheduler();
     }
 
+    @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (event.getName().equals("addmeeting")) {
             event.deferReply().queue();
@@ -65,7 +68,7 @@ public class Bot extends ListenerAdapter {
 
             //Buttons
             Button meeting = Button.success("meeting", "Set up a meeting");
-            Button releases = Button.primary("releases", "Set up a release day");
+            Button profilebutton = Button.primary("profilebtn", "Profile page");
             //Message Builder
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("DeduceData Reminder System")
@@ -74,7 +77,7 @@ public class Bot extends ListenerAdapter {
                     .setColor(Color.BLUE) // Optional: You can set a color for the embed. This is just an example.
                     .setFooter("DeduceData Reminder Service")
                     .setUrl("https://deducedata.solutions/es/"); // Optional: Adding a footer for additional context or branding.
-            event.getHook().sendMessageEmbeds(embedBuilder.build()).setActionRow(meeting, releases).queue();
+            event.getHook().sendMessageEmbeds(embedBuilder.build()).setActionRow(meeting, profilebutton).queue();
 
         } else if (event.getName().equals("register")) {
             event.deferReply().queue();
@@ -128,10 +131,23 @@ public class Bot extends ListenerAdapter {
                 // If the user is not registered (i.e., optionalUser is empty)
                 event.getHook().sendMessage("**User is not registered.** \n\nUse /register to register yourself.").queue();
             });
+        } else if (event.getName().equals("weeklyreminders")) {
+            event.deferReply().queue();
+
+            long discordId = event.getUser().getIdLong();
+            List<Reminder> weeklyReminders = dbFunctions.getWeeklyReminders(discordId);
+
+            if (weeklyReminders.isEmpty()) {
+                event.reply("**You have no reminders for the next week.**").queue();
+            } else {
+                for (Reminder reminder : weeklyReminders) {
+                    EmbedBuilder embed = functions.getReminderEmbedForMessage(reminder.getReminderId());
+                    event.getHook().sendMessageEmbeds(embed.build()).setEphemeral(true).queue();
+                }
+            }
         }
-
-
     }
+
 
     public void onButtonInteraction(ButtonInteractionEvent event) {
         if (event.getComponentId().equals("meeting")) {
@@ -163,13 +179,36 @@ public class Bot extends ListenerAdapter {
             TextInput newEmail = TextInput.create("newEmail", "Set up your new email", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setMinLength(1)
-                    .setPlaceholder("test@gmail.com")
+                    .setPlaceholder("example@gmail.com")
                     .build();
             Modal newEmailModal = Modal.create("UpdateEmailModal", "Email Change")
                     .addActionRow(newEmail).build();
             event.replyModal(newEmailModal).queue();
+        } else if (event.getComponentId().equals("profilebtn")) {
+            event.deferReply().queue();
+            Optional<bot.users.User> optionalUser = dbFunctions.getUserDetailsByDiscordId(event.getUser().getIdLong());
+            Button updateEmail = Button.success("updateEmail", "Update Email");
+            optionalUser.ifPresentOrElse(user -> {
+                // If the user is registered (i.e., optionalUser contains a User)
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setTitle("DeduceData Reminder System")
+                        .setDescription("Hello " + event.getUser().getAsMention() + ",\n\n" +
+                                "Here you have your profile details: " + " \n \n \n " +
+                                "User ID: " + user.getUserId() + "\n \n" +
+                                "Discord ID: " + user.getDiscordId() + "\n\n" +
+                                "Discord Name: " + user.getDiscordName() + "\n\n" +
+                                "Email: " + user.getEmail())
+                        .setColor(Color.CYAN)
+                        .setFooter("DeduceData Reminder Service")
+                        .setUrl("https://deducedata.solutions/es/");
+                event.getHook().sendMessageEmbeds(embedBuilder.build()).setActionRow(updateEmail).queue();
+            }, () -> {
+                // If the user is not registered (i.e., optionalUser is empty)
+                event.getHook().sendMessage("**User is not registered.** \n\nUse /register to register yourself.").queue();
+            });
         }
     }
+
 
     public void onModalInteraction(ModalInteractionEvent event) {
         if (event.getModalId().equals("meetingModal")) {
@@ -317,7 +356,7 @@ public class Bot extends ListenerAdapter {
                 long diffMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);
                 long hours = diffMinutes / 60;
                 long minutes = diffMinutes % 60;
-                System.out.println("Diff minutes: " + diffMinutes);
+                //System.out.println("Diff minutes: " + diffMinutes);
 
                 boolean is24HrReminder = diffMinutes >= 1400 && diffMinutes <= 1500;
                 boolean is1HrReminder = diffMinutes >= 56 && diffMinutes <= 64;
@@ -328,10 +367,10 @@ public class Bot extends ListenerAdapter {
                 } else if (is1HrReminder && !functions.hasSent1hReminderDm(reminder.getReminderId())) {
                     sendReminderToAttendees(reminder, hours, minutes);
                     dbFunctions.set1hReminderSentDm(reminder.getReminderId());
-                }else if(is24HrReminder && !functions.hasSent24hReminderEmbed(reminder.getReminderId())){
+                } else if (is24HrReminder && !functions.hasSent24hReminderEmbed(reminder.getReminderId())) {
                     sendReminderToEmbed(reminder, hours, minutes, channelID);
                     dbFunctions.set24hReminderSentEmbed(reminder.getReminderId());
-                }else if(is1HrReminder && !functions.hasSent24hReminderEmbed(reminder.getReminderId())){
+                } else if (is1HrReminder && !functions.hasSent24hReminderEmbed(reminder.getReminderId())) {
                     sendReminderToEmbed(reminder, hours, minutes, channelID);
                     dbFunctions.set1hReminderSentEmbed(reminder.getReminderId());
                     System.out.println("removeme line 337 bot");

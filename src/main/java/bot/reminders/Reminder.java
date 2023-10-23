@@ -17,11 +17,11 @@ public class Reminder {
     private Timestamp timestamp;
     private long messageId;
 
-    public Reminder(){
+    public Reminder() {
 
     }
 
-    public Reminder(int reminderId, long userId, String title,String description, String url, String creator, Timestamp date, long messageId) {
+    public Reminder(int reminderId, long userId, String title, String description, String url, String creator, Timestamp date, long messageId) {
         this.reminderId = reminderId;
         this.userId = userId;
         this.title = title;
@@ -62,47 +62,29 @@ public class Reminder {
         return userId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+
 
     public String getCreator() {
         return creator;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public Timestamp getTimestamp() {
+        return timestamp;
     }
 
     public Timestamp getDate() {
         return timestamp;
     }
-
-    public void setDate(Timestamp date) {
-        this.timestamp = date;
-    }
-
-    public long getMessageId() {
-        return messageId;
-    }
-
-    public void setMessageId(Long messageId) {
-        this.messageId = messageId;
-    }
 }
+

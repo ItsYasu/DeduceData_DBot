@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandsHandler extends ListenerAdapter {
-
+    @Override
     public void onGuildReady(GuildReadyEvent event) {
-
+        System.out.println("OnGuildReady invoked for guild: " + event.getGuild().getName());
         //Storing commands in a List
         List<CommandData> commandList = new ArrayList<>();
         //Creating options for register in database:
@@ -25,6 +25,7 @@ public class CommandsHandler extends ListenerAdapter {
         commandList.add(Commands.slash("register","Register your discord user on the database to receive notifications through email").addOptions(email));
         commandList.add(Commands.slash("updateemail", "Add or Update your current email to get notified.").addOptions(updatedEmail));
         commandList.add(Commands.slash("profile", "Prints your profile details"));
+        commandList.add(Commands.slash("weeklyreminders" , "Prints all the reminders you have for the next week"));
         //Registering commandList to JDA API (bot)
         event.getGuild().updateCommands().addCommands(commandList).queue();
 

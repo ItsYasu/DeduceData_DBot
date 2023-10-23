@@ -4,24 +4,28 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/remindme";
-    private static final String USER = "root";
-    private static final String PASSWORD = "0143";
+    // Retrieve database name and password from environment variables
+    private static final String DB_URL = System.getenv("REMINDME_DB_URL");
+    private static final String USER = System.getenv("REMINDME_DB_USER");
+    private static final String PASSWORD = System.getenv("REMINDME_DB_PW");
+
 
     private static HikariConfig config = new HikariConfig();
 
     private static HikariDataSource ds;
 
     static {
+        System.out.println(DB_URL);
+        System.out.println(USER);
+        System.out.println(PASSWORD);
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(URL);
-        config.setUsername(USER);
-        config.setPassword(PASSWORD);
+        config.setJdbcUrl(System.getenv("REMINDME_DB_URL"));
+        config.setUsername(System.getenv("REMINDME_DB_USER"));
+        config.setPassword(System.getenv("REMINDME_DB_PW"));
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -31,14 +35,10 @@ public class DatabaseConnection {
         config.setLeakDetectionThreshold(300000);
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-
         ds = new HikariDataSource(config);
-
     }
 
     public static Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
 }
-
-

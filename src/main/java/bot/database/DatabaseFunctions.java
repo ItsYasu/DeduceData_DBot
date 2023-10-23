@@ -4,24 +4,14 @@ import bot.reminders.Reminder;
 import bot.users.User;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class DatabaseFunctions {
 
-    public void testConnection() {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            if (connection != null && !connection.isClosed()) {
-                System.out.println("Connection is valid and working!");
-            } else {
-                System.out.println("Connection is not valid.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Error testing the connection.");
-        }
-    }
     public Optional<Long> findUserIdByDiscordId(Long discordId) {
         String query = "SELECT user_id FROM USERS WHERE discord_id = ?";
         Long userId = null;
@@ -287,5 +277,37 @@ public class DatabaseFunctions {
             e.printStackTrace();
         }
     }
+    public List<Reminder> getWeeklyReminders(long discordId) {
+        List<Reminder> reminders = new ArrayList<>();
+        String query = "SELECT * FROM REMINDERS r " +
+                "JOIN USERS u ON r.user_id = u.user_id " +
+                "WHERE u.discord_id = ? AND fecha BETWEEN ? AND ?";
 
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime oneWeekLater = now.plusWeeks(1);
+
+            // Setting the parameters
+            ps.setLong(1, discordId);
+            ps.setString(2, now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            ps.setString(3, oneWeekLater.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Reminder reminder = new Reminder();
+                reminder.setReminderId(rs.getInt("reminder_id"));
+                // ... [populate other Reminder fields here]
+                reminders.add(reminder);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reminders;
+    }
 }
+
+
