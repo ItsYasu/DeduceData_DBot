@@ -154,13 +154,14 @@ public class DatabaseFunctions {
             }
         }
     }
-    public void addAttendeeToMeeting(long userId, int reminderId) {
-        String query = "INSERT INTO MEETING_ATTENDEES(user_id, reminder_id) VALUES(?, ?)";
+    public void addAttendeeToMeeting(long userId,long discord_id, int reminderId) {
+        String query = "INSERT INTO MEETING_ATTENDEES(user_id, discord_id,reminder_id) VALUES(?,?, ?)";
 
         try(Connection connection = DatabaseConnection.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(query);
         ) {
             preparedStatement.setLong(1, userId);
-            preparedStatement.setInt(2, reminderId);
+            preparedStatement.setLong(2, discord_id);
+            preparedStatement.setInt(3, reminderId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -279,13 +280,12 @@ public class DatabaseFunctions {
     }
     public List<Reminder> getWeeklyReminders(long discordId) {
         List<Reminder> reminders = new ArrayList<>();
-        String query = "SELECT * FROM REMINDERS r " +
-                "JOIN USERS u ON r.user_id = u.user_id " +
-                "WHERE u.discord_id = ? AND fecha BETWEEN ? AND ?";
+        String query = "SELECT r.* FROM REMINDERS r " +
+                "JOIN MEETING_ATTENDEES ma ON r.reminder_id = ma.reminder_id " +
+                "WHERE ma.discord_id = ? AND r.fecha BETWEEN ? AND ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
-
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime oneWeekLater = now.plusWeeks(1);
 
@@ -295,6 +295,27 @@ public class DatabaseFunctions {
             ps.setString(3, oneWeekLater.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
             ResultSet rs = ps.executeQuery();
+            System.out.println("Fetching weekly reminders for discordId: " + discordId);
+            System.out.println("Date Range Start: " + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            System.out.println("Date Range End: " + oneWeekLater.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            while (rs.next()) {
+                Reminder reminder = new Reminder();
+                reminder.setReminderId(rs.getInt("reminder_id"));
+                // ... [populate other Reminder fields here]
+                reminders.add(reminder);
+            }
+            String checkQuery = "SELECT COUNT(*) FROM MEETING_ATTENDEES WHERE discord_id = ?";
+            try (PreparedStatement checkPs = connection.prepareStatement(checkQuery)) {
+                checkPs.setLong(1, discordId);
+                ResultSet checkRs = checkPs.executeQuery();
+                if (checkRs.next()) {
+                    int count = checkRs.getInt(1);
+                    System.out.println("User exists in MEETING_ATTENDEES table: " + (count > 0));
+                }
+            }
+
+            System.out.println("Retrieved reminders count before adding: " + reminders.size());
 
             while (rs.next()) {
                 Reminder reminder = new Reminder();
@@ -303,11 +324,15 @@ public class DatabaseFunctions {
                 reminders.add(reminder);
             }
 
+            System.out.println("Retrieved reminders count after adding: " + reminders.size());
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return reminders;
     }
+
 }
 
 

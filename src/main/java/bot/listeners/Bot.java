@@ -48,7 +48,7 @@ public class Bot extends ListenerAdapter {
 
     DatabaseFunctions dbFunctions = new DatabaseFunctions();
     Functions functions = new Functions();
-    private static final long channelID = 1164719760437682268L; // 'L' at the end to mark it as a long literal
+    private static final long channelID = 1166022507594264626L; // 'L' at the end to mark it as a long literal
 
 
     public void setJDA(JDA jda) {
@@ -138,7 +138,7 @@ public class Bot extends ListenerAdapter {
             List<Reminder> weeklyReminders = dbFunctions.getWeeklyReminders(discordId);
 
             if (weeklyReminders.isEmpty()) {
-                event.reply("**You have no reminders for the next week.**").queue();
+                event.getHook().sendMessage("**You have no reminders for the next week.**").queue();
             } else {
                 for (Reminder reminder : weeklyReminders) {
                     EmbedBuilder embed = functions.getReminderEmbedForMessage(reminder.getReminderId());
@@ -278,6 +278,7 @@ public class Bot extends ListenerAdapter {
         }
         String messageID = event.getMessageId();
         Integer reminderId = dbFunctions.getReminderIdByMessageId(messageID);
+        long discord_id = event.getUserIdLong();
         Optional<Long> userIdOpt = dbFunctions.findUserIdByDiscordId(event.getUser().getIdLong());
         if (!userIdOpt.isPresent()) {
             System.out.println("User not found: onMessageReactionAdd method.");
@@ -293,7 +294,7 @@ public class Bot extends ListenerAdapter {
             User user = event.getUser();
 
             if (reminderId != null && reminderId != -1) {
-                dbFunctions.addAttendeeToMeeting(userId, reminderId);
+                dbFunctions.addAttendeeToMeeting(userId,discord_id, reminderId);
                 dbFunctions.insertDiscordId(userId, reminderId, event.getUser().getIdLong());
 
             }
@@ -342,9 +343,6 @@ public class Bot extends ListenerAdapter {
         }
     }
 
-
-    private final Object lock = new Object();
-
     private void sendReminders() {
         try {
             java.util.Date now = new java.util.Date();
@@ -370,7 +368,7 @@ public class Bot extends ListenerAdapter {
                 } else if (is24HrReminder && !functions.hasSent24hReminderEmbed(reminder.getReminderId())) {
                     sendReminderToEmbed(reminder, hours, minutes, channelID);
                     dbFunctions.set24hReminderSentEmbed(reminder.getReminderId());
-                } else if (is1HrReminder && !functions.hasSent24hReminderEmbed(reminder.getReminderId())) {
+                } else if (is1HrReminder && !functions.hasSent1hReminderEmbed(reminder.getReminderId())) {
                     sendReminderToEmbed(reminder, hours, minutes, channelID);
                     dbFunctions.set1hReminderSentEmbed(reminder.getReminderId());
                     System.out.println("removeme line 337 bot");
