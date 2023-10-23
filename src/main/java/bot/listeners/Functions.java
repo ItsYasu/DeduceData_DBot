@@ -33,20 +33,17 @@ public class Functions {
 
                 // Adjusting description format
                 StringBuilder formattedDescription = new StringBuilder(description);
-
-                // Add URL to the description if it's not null
                 if (url != null && !url.trim().isEmpty()) {
-                    formattedDescription.append("\n\n")
-                            .append("**URL:** ")
-                            .append(url);
+                    formattedDescription.append("\n\n").append("**URL:** ").append(url);
                 }
+
+
+                formattedDescription.append("\n\n").append("**Date:** ").append(timestamp);
+
 
                 // Create an EmbedBuilder and populate it with the data
                 EmbedBuilder embedBuilder = new EmbedBuilder();
-                embedBuilder.setTitle(title)
-                        .setDescription(formattedDescription.toString())
-                        .setColor(Color.BLUE)
-                        .setFooter("Reminder created by: " + creator + ". Date: " + timestamp);
+                embedBuilder.setTitle(title).setDescription(formattedDescription.toString()).setColor(Color.BLUE).setFooter("Reminder created by: " + creator + ". Date: " + timestamp);
 
                 // Set URL only if it's not null
                 if (url != null && !url.trim().isEmpty()) {
@@ -65,7 +62,7 @@ public class Functions {
     public boolean hasSent24hReminderDm(int reminderId) {
         String query = "SELECT sent_24h_reminder_dm FROM REMINDERS WHERE reminder_id = ?";
         DatabaseConnection dbConnection = new DatabaseConnection();
-        try (Connection connection = dbConnection.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, reminderId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -81,7 +78,7 @@ public class Functions {
     public boolean hasSent1hReminderDm(int reminderId) {
         String query = "SELECT sent_1h_reminder_dm FROM REMINDERS WHERE reminder_id = ?";
         DatabaseConnection dbConnection = new DatabaseConnection();
-        try (Connection connection = dbConnection.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, reminderId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -93,10 +90,11 @@ public class Functions {
         }
         return false;
     }
+
     public boolean hasSent24hReminderEmbed(int reminderId) {
         String query = "SELECT sent_24h_reminder_embed FROM REMINDERS WHERE reminder_id = ?";
         DatabaseConnection dbConnection = new DatabaseConnection();
-        try (Connection connection = dbConnection.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, reminderId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -108,10 +106,11 @@ public class Functions {
         }
         return false;
     }
+
     public boolean hasSent1hReminderEmbed(int reminderId) {
         String query = "SELECT sent_1h_reminder_embed FROM REMINDERS WHERE reminder_id = ?";
         DatabaseConnection dbConnection = new DatabaseConnection();
-        try (Connection connection = dbConnection.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, reminderId);
             ResultSet resultSet = preparedStatement.executeQuery();
 

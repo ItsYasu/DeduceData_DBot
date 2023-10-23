@@ -9,7 +9,7 @@ public class Config {
 
     static {
         try {
-            properties.load(new FileInputStream("config.properties"));
+            properties.load(new FileInputStream("C:\\Users\\Administrator\\Desktop\\Java Projects\\DeduceData_DBot\\src\\main\\resources\\config.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
