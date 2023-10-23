@@ -48,7 +48,7 @@ public class Bot extends ListenerAdapter {
 
     DatabaseFunctions dbFunctions = new DatabaseFunctions();
     Functions functions = new Functions();
-    private static final long channelID = 1166022507594264626L; // 'L' at the end to mark it as a long literal
+    private static final long channelID = 1166027256511074406L; // 'L' at the end to mark it as a long literal
 
 
     public void setJDA(JDA jda) {
