@@ -19,9 +19,6 @@ public class DatabaseConnection {
     private static HikariDataSource ds;
 
     static {
-        System.out.println(DB_URL);
-        System.out.println(USER);
-        System.out.println(PASSWORD);
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(System.getenv("REMINDME_DB_URL"));
         config.setUsername(System.getenv("REMINDME_DB_USER"));
