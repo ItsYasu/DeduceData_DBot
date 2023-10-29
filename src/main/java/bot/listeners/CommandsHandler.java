@@ -26,6 +26,7 @@ public class CommandsHandler extends ListenerAdapter {
         commandList.add(Commands.slash("updateemail", "Add or Update your current email to get notified.").addOptions(updatedEmail));
         commandList.add(Commands.slash("profile", "Prints your profile details"));
         commandList.add(Commands.slash("weeklyreminders" , "Prints all the reminders you have for the next week"));
+        commandList.add(Commands.slash("enable_vt_reminders","Set to false by default. Just affect to online lessons"));
         //Registering commandList to JDA API (bot)
         event.getGuild().updateCommands().addCommands(commandList).queue();
 

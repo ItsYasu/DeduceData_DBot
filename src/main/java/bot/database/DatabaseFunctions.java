@@ -332,7 +332,37 @@ public class DatabaseFunctions {
         }
         return reminders;
     }
-
+    /**
+     * Check if the user has the vt_reminder flag enabled.
+     * @param discordId the discord_id of the user.
+     * @return true if vt_reminder is enabled, false otherwise.
+     */
+    public boolean userHasVTFlagEnabled(long discordId) {
+        String query = "SELECT vt_reminder FROM USERS WHERE discord_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setLong(1, discordId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getBoolean("vt_reminder");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false by default, or if an exception occurs.
+    }
+    public boolean setVTFlag(long discordId, boolean vtFlag) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement("UPDATE USERS SET vt_reminder = ? WHERE discord_id = ?")) {
+            ps.setBoolean(1, vtFlag);
+            ps.setLong(2, discordId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
+
 
 

@@ -145,6 +145,17 @@ public class Bot extends ListenerAdapter {
                     event.getHook().sendMessageEmbeds(embed.build()).setEphemeral(true).queue();
                 }
             }
+        }else if(event.getName().equals("enable_vt_reminders")){
+            event.deferReply().queue();
+            long discordId = event.getUser().getIdLong();
+            if(dbFunctions.userHasVTFlagEnabled(discordId)){
+                dbFunctions.setVTFlag(discordId,false);
+                event.getHook().sendMessage("**vt_reminder had been set to: " + dbFunctions.userHasVTFlagEnabled(discordId) + "**").queue();
+            }else{
+                dbFunctions.setVTFlag(discordId,true);
+                event.getHook().sendMessage("**vt_reminder had been set to: " + dbFunctions.userHasVTFlagEnabled(discordId) + "**").queue();
+            }
+
         }
     }
 
@@ -350,12 +361,18 @@ public class Bot extends ListenerAdapter {
             List<Reminder> upcomingReminders = dbFunctions.getUpcomingReminders();
 
             for (Reminder reminder : upcomingReminders) {
+
+                boolean userHasVTFlag = dbFunctions.userHasVTFlagEnabled(dbFunctions.findDiscordIdByUserId(reminder.getUserId()));
+                // If the reminder contains "videotutoria" or "videotutoría" in its title and the user doesn't have the vt_reminder flag, skip it
+                if ((reminder.getTitle().contains("videotutoria") || reminder.getTitle().contains("videotutoría")) && !userHasVTFlag) {
+                    continue;
+                }
+
                 long diff = reminder.getDate().getTime() - now.getTime();
                 long diffMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);
                 long hours = diffMinutes / 60;
                 long minutes = diffMinutes % 60;
                 //System.out.println("Diff minutes: " + diffMinutes);
-
                 boolean is24HrReminder = diffMinutes >= 1400 && diffMinutes <= 1500;
                 boolean is1HrReminder = diffMinutes >= 56 && diffMinutes <= 64;
 
@@ -371,7 +388,6 @@ public class Bot extends ListenerAdapter {
                 } else if (is1HrReminder && !functions.hasSent1hReminderEmbed(reminder.getReminderId())) {
                     sendReminderToEmbed(reminder, hours, minutes, channelID);
                     dbFunctions.set1hReminderSentEmbed(reminder.getReminderId());
-                    System.out.println("removeme line 337 bot");
                 }
             }
 
@@ -414,7 +430,7 @@ public class Bot extends ListenerAdapter {
         }
 
         String mentionsString = String.join(" ", mentions);
-        System.out.println("sendReminderToEmbed: " + mentionsString);
+        System.out.println("Embed message had been sent for reminder id:  " + reminder.getReminderId());
         String reminderMessage = mentionsString + " **Reminder:** There is a meeting in approximately " + hours + " hours and " + minutes + " minutes.";
 
         channel.sendMessage(reminderMessage).addEmbeds(reminderEmbed.build()).queue(success -> {
