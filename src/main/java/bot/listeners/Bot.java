@@ -404,6 +404,7 @@ public class Bot extends ListenerAdapter {
         if (channel == null || reminderEmbed == null) {
             return;
         }
+        boolean userHasVTFlag = dbFunctions.userHasVTFlagEnabled(dbFunctions.findDiscordIdByUserId(reminder.getUserId()));
 
         // Fetch all attendees for the meeting from the database
         List<Long> attendees = dbFunctions.getAttendeesForMeeting(reminder.getReminderId());
@@ -412,6 +413,10 @@ public class Bot extends ListenerAdapter {
         List<String> mentions = new ArrayList<>();
         CountDownLatch latch = new CountDownLatch(attendees.size()); // used for synchronization
         for (Long userId : attendees) {
+            // If the reminder contains "videotutoria" or "videotutoría" in its title and the user doesn't have the vt_reminder flag, skip it
+            if ((reminder.getTitle().contains("videotutoria") || reminder.getTitle().contains("videotutoría")) && !userHasVTFlag) {
+                continue;
+            }
             Long discordID = dbFunctions.findDiscordIdByUserId(userId);
             jda.retrieveUserById(discordID).queue(user -> {
                 if (user != null) {
